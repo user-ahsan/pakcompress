@@ -38,9 +38,7 @@ export function Dropzone({
         }`}
       >
         <div className="flex justify-center" aria-hidden="true">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-pak-light text-pak">
-            <UploadCloud className="h-7 w-7" />
-          </div>
+          <UploadCloud className="h-12 w-12 text-pak stroke-[1.75]" />
         </div>
         <p className="mt-3 font-display text-lg font-bold text-ink">{label}</p>
         <p className="mt-1 text-sm text-slate-600">{urduHelp}</p>

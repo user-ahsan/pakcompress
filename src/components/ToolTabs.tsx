@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Camera, FileText, IdCard } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Compressor } from "./Compressor";
@@ -12,24 +12,6 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
   const [activeTab, setActiveTab] = useState<ToolMode>(defaultMode);
   const { t } = useLanguage();
 
-  useEffect(() => {
-    const handleHash = () => {
-      const hash = window.location.hash.replace("#", "").toLowerCase();
-      if (hash === "pdf") setActiveTab("pdf");
-      else if (hash === "passport") setActiveTab("passport");
-      else if (hash === "photo" || hash === "compress") setActiveTab("photo");
-    };
-
-    handleHash();
-    window.addEventListener("hashchange", handleHash);
-    return () => window.removeEventListener("hashchange", handleHash);
-  }, []);
-
-  const selectTab = (tab: ToolMode) => {
-    setActiveTab(tab);
-    window.history.replaceState(null, "", `#${tab}`);
-  };
-
   return (
     <div className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       {/* Unified Tab Bar Header - Directly integrated with the card container */}
@@ -38,28 +20,25 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
         aria-label="Tool selection menu"
         className="grid grid-cols-1 divide-y divide-slate-200 border-b border-slate-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0 bg-slate-50"
       >
+        {/* Tab 1: Photo Compressor */}
         <button
           type="button"
           role="tab"
           id="tab-photo"
           aria-selected={activeTab === "photo"}
           aria-controls="panel-photo"
-          onClick={() => selectTab("photo")}
-          className={`group flex items-center gap-3 p-4 text-left transition sm:flex-col sm:items-start ${
+          onClick={() => setActiveTab("photo")}
+          className={`group flex items-center gap-3.5 p-4 text-left transition cursor-pointer sm:flex-col sm:items-start ${
             activeTab === "photo"
               ? "bg-pak text-white shadow-xs"
               : "text-slate-700 hover:bg-slate-100 hover:text-ink"
           }`}
         >
-          <div
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition ${
-              activeTab === "photo"
-                ? "bg-white/20 text-white"
-                : "border border-slate-200 bg-white text-slate-600 shadow-2xs"
+          <Camera
+            className={`h-7 w-7 shrink-0 transition ${
+              activeTab === "photo" ? "text-white stroke-[2.2]" : "text-pak stroke-[1.8]"
             }`}
-          >
-            <Camera className="h-5 w-5" />
-          </div>
+          />
           <div>
             <span className="block font-display text-sm font-bold sm:text-base">{t("photoTab")}</span>
             <span className={`block text-xs ${activeTab === "photo" ? "text-emerald-100" : "text-slate-500"}`}>
@@ -68,28 +47,25 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
           </div>
         </button>
 
+        {/* Tab 2: PDF Compressor */}
         <button
           type="button"
           role="tab"
           id="tab-pdf"
           aria-selected={activeTab === "pdf"}
           aria-controls="panel-pdf"
-          onClick={() => selectTab("pdf")}
-          className={`group flex items-center gap-3 p-4 text-left transition sm:flex-col sm:items-start ${
+          onClick={() => setActiveTab("pdf")}
+          className={`group flex items-center gap-3.5 p-4 text-left transition cursor-pointer sm:flex-col sm:items-start ${
             activeTab === "pdf"
               ? "bg-pak text-white shadow-xs"
               : "text-slate-700 hover:bg-slate-100 hover:text-ink"
           }`}
         >
-          <div
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition ${
-              activeTab === "pdf"
-                ? "bg-white/20 text-white"
-                : "border border-slate-200 bg-white text-slate-600 shadow-2xs"
+          <FileText
+            className={`h-7 w-7 shrink-0 transition ${
+              activeTab === "pdf" ? "text-white stroke-[2.2]" : "text-pak stroke-[1.8]"
             }`}
-          >
-            <FileText className="h-5 w-5" />
-          </div>
+          />
           <div>
             <span className="block font-display text-sm font-bold sm:text-base">{t("pdfTab")}</span>
             <span className={`block text-xs ${activeTab === "pdf" ? "text-emerald-100" : "text-slate-500"}`}>
@@ -98,28 +74,25 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
           </div>
         </button>
 
+        {/* Tab 3: Passport Photo Maker */}
         <button
           type="button"
           role="tab"
           id="tab-passport"
           aria-selected={activeTab === "passport"}
           aria-controls="panel-passport"
-          onClick={() => selectTab("passport")}
-          className={`group flex items-center gap-3 p-4 text-left transition sm:flex-col sm:items-start ${
+          onClick={() => setActiveTab("passport")}
+          className={`group flex items-center gap-3.5 p-4 text-left transition cursor-pointer sm:flex-col sm:items-start ${
             activeTab === "passport"
               ? "bg-pak text-white shadow-xs"
               : "text-slate-700 hover:bg-slate-100 hover:text-ink"
           }`}
         >
-          <div
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition ${
-              activeTab === "passport"
-                ? "bg-white/20 text-white"
-                : "border border-slate-200 bg-white text-slate-600 shadow-2xs"
+          <IdCard
+            className={`h-7 w-7 shrink-0 transition ${
+              activeTab === "passport" ? "text-white stroke-[2.2]" : "text-pak stroke-[1.8]"
             }`}
-          >
-            <IdCard className="h-5 w-5" />
-          </div>
+          />
           <div>
             <span className="block font-display text-sm font-bold sm:text-base">{t("passportTab")}</span>
             <span className={`block text-xs ${activeTab === "passport" ? "text-emerald-100" : "text-slate-500"}`}>
@@ -139,16 +112,16 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
               <div className="flex gap-3">
                 <button
                   type="button"
-                  onClick={() => selectTab("pdf")}
-                  className="font-semibold text-pak underline hover:text-pak-dark"
+                  onClick={() => setActiveTab("pdf")}
+                  className="font-semibold text-pak underline hover:text-pak-dark cursor-pointer"
                 >
                   Switch to PDF Compressor
                 </button>
                 <span>•</span>
                 <button
                   type="button"
-                  onClick={() => selectTab("passport")}
-                  className="font-semibold text-pak underline hover:text-pak-dark"
+                  onClick={() => setActiveTab("passport")}
+                  className="font-semibold text-pak underline hover:text-pak-dark cursor-pointer"
                 >
                   Switch to Passport Photo
                 </button>
@@ -165,16 +138,16 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
               <div className="flex gap-3">
                 <button
                   type="button"
-                  onClick={() => selectTab("photo")}
-                  className="font-semibold text-pak underline hover:text-pak-dark"
+                  onClick={() => setActiveTab("photo")}
+                  className="font-semibold text-pak underline hover:text-pak-dark cursor-pointer"
                 >
                   Switch to Photo Compressor
                 </button>
                 <span>•</span>
                 <button
                   type="button"
-                  onClick={() => selectTab("passport")}
-                  className="font-semibold text-pak underline hover:text-pak-dark"
+                  onClick={() => setActiveTab("passport")}
+                  className="font-semibold text-pak underline hover:text-pak-dark cursor-pointer"
                 >
                   Switch to Passport Photo
                 </button>
@@ -191,16 +164,16 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
               <div className="flex gap-3">
                 <button
                   type="button"
-                  onClick={() => selectTab("photo")}
-                  className="font-semibold text-pak underline hover:text-pak-dark"
+                  onClick={() => setActiveTab("photo")}
+                  className="font-semibold text-pak underline hover:text-pak-dark cursor-pointer"
                 >
                   Switch to Photo Compressor
                 </button>
                 <span>•</span>
                 <button
                   type="button"
-                  onClick={() => selectTab("pdf")}
-                  className="font-semibold text-pak underline hover:text-pak-dark"
+                  onClick={() => setActiveTab("pdf")}
+                  className="font-semibold text-pak underline hover:text-pak-dark cursor-pointer"
                 >
                   Switch to PDF Compressor
                 </button>

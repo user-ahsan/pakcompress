@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Compressor } from "@/components/Compressor";
-import { PdfCompressor } from "@/components/PdfCompressor";
-import { PassportMaker } from "@/components/PassportMaker";
+import { ToolTabs } from "@/components/ToolTabs";
 import { PORTAL_PRESETS } from "@/data/presets";
 import { GUIDES } from "@/data/guides";
 
@@ -44,12 +42,8 @@ export default function Home() {
             <span className="rounded-full bg-white px-3 py-1 border">Works on mobile</span>
             <span className="rounded-full bg-white px-3 py-1 border">Urdu + English</span>
           </div>
-          <div id="compress" className="mt-8 grid gap-6 lg:grid-cols-2">
-            <Compressor defaultTarget={100} />
-            <div className="space-y-6">
-              <PdfCompressor defaultTarget={200} />
-              <PassportMaker />
-            </div>
+          <div id="compress" className="mt-8 mx-auto max-w-3xl">
+            <ToolTabs defaultMode="photo" />
           </div>
         </div>
       </section>

@@ -40,7 +40,7 @@ export default function Home() {
             <span className="rounded-full bg-white px-3 py-1 border">No upload</span>
             <span className="rounded-full bg-white px-3 py-1 border">Free - 1 file</span>
             <span className="rounded-full bg-white px-3 py-1 border">Works on mobile</span>
-            <span className="rounded-full bg-white px-3 py-1 border">Urdu + English</span>
+            <span className="rounded-full bg-white px-3 py-1 border">English, Urdu, Sindhi, Punjabi</span>
           </div>
           <div id="compress" className="mt-8 mx-auto max-w-3xl">
             <ToolTabs defaultMode="photo" />

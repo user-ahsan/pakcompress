@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { RotateCw, Crop } from "lucide-react";
 import { Button } from "./ui/button";
 
 export type AspectRatioType = "1:1" | "35:45" | "4:3" | "free";
@@ -266,8 +267,9 @@ export function ImageCropper({
           </h3>
         </div>
         <div className="flex gap-2">
-          <Button type="button" variant="outline" size="md" onClick={rotate}>
-            🔄 Rotate 90°
+          <Button type="button" variant="outline" size="md" onClick={rotate} className="inline-flex items-center">
+            <RotateCw className="w-4 h-4 mr-1.5" />
+            Rotate 90°
           </Button>
           <Button
             type="button"

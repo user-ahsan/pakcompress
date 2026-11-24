@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Camera, FileText, IdCard } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Compressor } from "./Compressor";
 import { PdfCompressor } from "./PdfCompressor";
@@ -30,12 +31,12 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
   };
 
   return (
-    <div className="w-full">
-      {/* Tool Navigation Menu / Segmented Control */}
+    <div className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      {/* Unified Tab Bar Header - Directly integrated with the card container */}
       <div
         role="tablist"
         aria-label="Tool selection menu"
-        className="grid grid-cols-1 gap-2 rounded-2xl bg-white p-2 shadow-sm border border-slate-200 sm:grid-cols-3 sm:gap-3"
+        className="grid grid-cols-1 divide-y divide-slate-200 border-b border-slate-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0 bg-slate-50"
       >
         <button
           type="button"
@@ -44,14 +45,20 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
           aria-selected={activeTab === "photo"}
           aria-controls="panel-photo"
           onClick={() => selectTab("photo")}
-          className={`group flex items-center gap-3 rounded-xl p-3.5 text-left transition sm:flex-col sm:items-start ${
+          className={`group flex items-center gap-3 p-4 text-left transition sm:flex-col sm:items-start ${
             activeTab === "photo"
-              ? "bg-pak text-white shadow-md ring-2 ring-pak/20"
-              : "bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-ink"
+              ? "bg-pak text-white shadow-xs"
+              : "text-slate-700 hover:bg-slate-100 hover:text-ink"
           }`}
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20 text-xl font-bold sm:h-8 sm:w-8 sm:text-base">
-            📷
+          <div
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition ${
+              activeTab === "photo"
+                ? "bg-white/20 text-white"
+                : "border border-slate-200 bg-white text-slate-600 shadow-2xs"
+            }`}
+          >
+            <Camera className="h-5 w-5" />
           </div>
           <div>
             <span className="block font-display text-sm font-bold sm:text-base">{t("photoTab")}</span>
@@ -68,14 +75,20 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
           aria-selected={activeTab === "pdf"}
           aria-controls="panel-pdf"
           onClick={() => selectTab("pdf")}
-          className={`group flex items-center gap-3 rounded-xl p-3.5 text-left transition sm:flex-col sm:items-start ${
+          className={`group flex items-center gap-3 p-4 text-left transition sm:flex-col sm:items-start ${
             activeTab === "pdf"
-              ? "bg-pak text-white shadow-md ring-2 ring-pak/20"
-              : "bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-ink"
+              ? "bg-pak text-white shadow-xs"
+              : "text-slate-700 hover:bg-slate-100 hover:text-ink"
           }`}
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20 text-xl font-bold sm:h-8 sm:w-8 sm:text-base">
-            📄
+          <div
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition ${
+              activeTab === "pdf"
+                ? "bg-white/20 text-white"
+                : "border border-slate-200 bg-white text-slate-600 shadow-2xs"
+            }`}
+          >
+            <FileText className="h-5 w-5" />
           </div>
           <div>
             <span className="block font-display text-sm font-bold sm:text-base">{t("pdfTab")}</span>
@@ -92,14 +105,20 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
           aria-selected={activeTab === "passport"}
           aria-controls="panel-passport"
           onClick={() => selectTab("passport")}
-          className={`group flex items-center gap-3 rounded-xl p-3.5 text-left transition sm:flex-col sm:items-start ${
+          className={`group flex items-center gap-3 p-4 text-left transition sm:flex-col sm:items-start ${
             activeTab === "passport"
-              ? "bg-pak text-white shadow-md ring-2 ring-pak/20"
-              : "bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-ink"
+              ? "bg-pak text-white shadow-xs"
+              : "text-slate-700 hover:bg-slate-100 hover:text-ink"
           }`}
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20 text-xl font-bold sm:h-8 sm:w-8 sm:text-base">
-            🪪
+          <div
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition ${
+              activeTab === "passport"
+                ? "bg-white/20 text-white"
+                : "border border-slate-200 bg-white text-slate-600 shadow-2xs"
+            }`}
+          >
+            <IdCard className="h-5 w-5" />
           </div>
           <div>
             <span className="block font-display text-sm font-bold sm:text-base">{t("passportTab")}</span>
@@ -110,12 +129,12 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
         </button>
       </div>
 
-      {/* Active Tool Panel - Single focused dropzone per HCI principles */}
-      <div className="mt-6">
+      {/* Active Tool Content - Flows directly inside the card without extra borders */}
+      <div>
         {activeTab === "photo" && (
           <div role="tabpanel" id="panel-photo" aria-labelledby="tab-photo">
-            <Compressor defaultTarget={100} />
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-slate-600">
+            <Compressor defaultTarget={100} isTabContent={true} />
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-3 text-xs text-slate-600">
               <span>Need to compress a document instead?</span>
               <div className="flex gap-3">
                 <button
@@ -140,8 +159,8 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
 
         {activeTab === "pdf" && (
           <div role="tabpanel" id="panel-pdf" aria-labelledby="tab-pdf">
-            <PdfCompressor defaultTarget={200} />
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-slate-600">
+            <PdfCompressor defaultTarget={200} isTabContent={true} />
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-3 text-xs text-slate-600">
               <span>Need to compress a photo or signature instead?</span>
               <div className="flex gap-3">
                 <button
@@ -166,8 +185,8 @@ export function ToolTabs({ defaultMode = "photo" }: { defaultMode?: ToolMode }) 
 
         {activeTab === "passport" && (
           <div role="tabpanel" id="panel-passport" aria-labelledby="tab-passport">
-            <PassportMaker />
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-slate-600">
+            <PassportMaker isTabContent={true} />
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-3 text-xs text-slate-600">
               <span>Need to compress an existing photo or document?</span>
               <div className="flex gap-3">
                 <button

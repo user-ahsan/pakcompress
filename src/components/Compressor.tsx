@@ -1,14 +1,23 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import { Crop, Lock, Download } from "lucide-react";
 import { compressImageToTarget, downloadBlob, type ImageFormat } from "@/lib/compress-image";
 import { readHead, validateImageFile, formatKB } from "@/lib/validate";
+import { useLanguage } from "@/context/LanguageContext";
 import { Dropzone } from "./Dropzone";
 import { SizePresetPicker, PortalPresetRow } from "./SizePresetPicker";
 import { ProModal } from "./ProModal";
 import { ImageCropper } from "./ImageCropper";
 import { Button } from "./ui/button";
 
-export function Compressor({ defaultTarget = 100 }: { defaultTarget?: number }) {
+export function Compressor({
+  defaultTarget = 100,
+  isTabContent = false
+}: {
+  defaultTarget?: number;
+  isTabContent?: boolean;
+}) {
+  const { t } = useLanguage();
   const [target, setTarget] = useState(defaultTarget);
   const [format, setFormat] = useState<ImageFormat>("jpeg");
   const [file, setFile] = useState<File | null>(null);
@@ -60,24 +69,19 @@ export function Compressor({ defaultTarget = 100 }: { defaultTarget?: number }) 
     }
   };
 
-  return (
-    <section aria-label="Photo compressor" className="rounded-2xl bg-white p-4 shadow-sm border border-slate-200 sm:p-6">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-        <div>
-          <span className="inline-block rounded-full bg-pak-light px-3 py-0.5 text-xs font-bold text-pak">Photo Compressor</span>
-          <h2 className="mt-1 font-display text-lg font-bold text-ink sm:text-xl">Photo to Exact KB</h2>
-        </div>
-        <span className="text-xs text-slate-500">For CNIC, FPSC, PPSC, Admissions</span>
-      </div>
+  const containerClasses = isTabContent
+    ? "p-4 sm:p-6"
+    : "rounded-2xl bg-white p-4 shadow-sm border border-slate-200 sm:p-6";
 
+  return (
+    <section aria-label="Photo compressor" className={containerClasses}>
       {!showCropper && (
         <Dropzone
           accept="image/jpeg,image/png,image/webp,image/gif"
           onFile={onFile}
-          label="Drop your photo here"
-          urduHelp="Photo ya signature yahan drop karein, ya click karke photo chunein."
-          fileLimits="JPG, PNG, WebP up to 25 MB. Strips EXIF and GPS data."
-          icon="📷"
+          label={t("dropPhotoTitle")}
+          urduHelp={t("dropPhotoUrdu")}
+          fileLimits={t("dropPhotoLimits")}
         />
       )}
 
@@ -89,9 +93,10 @@ export function Compressor({ defaultTarget = 100 }: { defaultTarget?: number }) 
             <button
               type="button"
               onClick={() => setShowCropper(true)}
-              className="rounded-md bg-pak px-2.5 py-1 text-xs font-bold text-white hover:bg-pak-dark transition"
+              className="inline-flex items-center rounded-md bg-pak px-2.5 py-1 text-xs font-bold text-white hover:bg-pak-dark transition"
             >
-              ✂️ Crop photo
+              <Crop className="w-3.5 h-3.5 mr-1" />
+              {t("cropBtn")}
             </button>
           </div>
         </div>
@@ -116,21 +121,22 @@ export function Compressor({ defaultTarget = 100 }: { defaultTarget?: number }) 
           <button
             type="button"
             onClick={() => setShowCropper(true)}
-            className="mt-2 text-xs font-semibold text-pak hover:underline"
+            className="mt-2 inline-flex items-center text-xs font-semibold text-pak hover:underline"
           >
+            <Crop className="w-3 h-3 mr-1" />
             Adjust crop (Square 1:1, Passport, or Freeform)
           </button>
         </div>
       )}
 
       <div className="mt-5">
-        <label className="text-sm font-semibold text-ink">Target size</label>
+        <label className="text-sm font-semibold text-ink">{t("targetSize")}</label>
         <div className="mt-2"><SizePresetPicker value={target} onChange={setTarget} /></div>
         <div className="mt-3"><PortalPresetRow onPick={setTarget} /></div>
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <label className="text-sm font-semibold text-ink" htmlFor="fmt">Output format</label>
+        <label className="text-sm font-semibold text-ink" htmlFor="fmt">{t("formatLabel")}</label>
         <select id="fmt" value={format} onChange={(e) => setFormat(e.target.value as ImageFormat)} className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-pak focus:outline-none">
           <option value="jpeg">JPG (recommended for Pakistan forms)</option>
           <option value="webp">WebP</option>
@@ -140,10 +146,11 @@ export function Compressor({ defaultTarget = 100 }: { defaultTarget?: number }) 
 
       <div className="mt-5 flex flex-wrap gap-3">
         <Button size="lg" onClick={run} disabled={!file || busy} className="w-full sm:w-auto">
-          {busy ? "Compressing..." : `Compress photo to ${target} KB`}
+          {busy ? "Compressing..." : `${t("compressPhotoBtn")} ${target} KB`}
         </Button>
-        <Button variant="outline" size="lg" onClick={() => setProOpen(true)} className="w-full sm:w-auto">
-          <span aria-hidden="true" className="mr-1.5">🔒</span> Batch (Pro)
+        <Button variant="outline" size="lg" onClick={() => setProOpen(true)} className="w-full sm:w-auto inline-flex items-center">
+          <Lock className="w-4 h-4 mr-1.5" />
+          {t("batchPro")}
         </Button>
       </div>
 
@@ -153,11 +160,14 @@ export function Compressor({ defaultTarget = 100 }: { defaultTarget?: number }) 
         <div className="mt-5 rounded-xl bg-pak-light p-4">
           <p className="font-semibold text-pak">Done: {result.sizeKB.toFixed(1)} KB (was {file ? formatKB(file.size) : ""})</p>
           <p className="text-sm text-slate-700">Quality {Math.round(result.quality * 100)} percent, {result.width} by {result.height} px. GPS and EXIF data removed.</p>
-          <Button className="mt-3" onClick={() => downloadBlob(result.blob, `compressed-${target}kb.jpg`)}>Download photo</Button>
+          <Button className="mt-3 inline-flex items-center gap-2" onClick={() => downloadBlob(result.blob, `compressed-${target}kb.jpg`)}>
+            <Download className="w-4 h-4" />
+            {t("downloadPhoto")}
+          </Button>
         </div>
       )}
 
-      <p className="mt-4 text-xs text-slate-500">Free: 1 file at a time. No upload. Your file never leaves this browser.</p>
+      <p className="mt-4 text-xs text-slate-500">{t("freeNote")}</p>
       <ProModal open={proOpen} onClose={() => setProOpen(false)} />
     </section>
   );

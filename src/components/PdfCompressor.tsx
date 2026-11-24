@@ -1,15 +1,24 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Crop, Download, Camera } from "lucide-react";
 import { compressPdf } from "@/lib/compress-pdf";
 import { readHead, validatePdfFile, formatKB } from "@/lib/validate";
 import { downloadBlob } from "@/lib/compress-image";
 import { detectPdfImages, type DetectedImage } from "@/lib/pdf-images";
+import { useLanguage } from "@/context/LanguageContext";
 import { Dropzone } from "./Dropzone";
 import { SizePresetPicker } from "./SizePresetPicker";
 import { ImageCropper } from "./ImageCropper";
 import { Button } from "./ui/button";
 
-export function PdfCompressor({ defaultTarget = 200 }: { defaultTarget?: number }) {
+export function PdfCompressor({
+  defaultTarget = 200,
+  isTabContent = false
+}: {
+  defaultTarget?: number;
+  isTabContent?: boolean;
+}) {
+  const { t } = useLanguage();
   const [target, setTarget] = useState(defaultTarget);
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
@@ -43,13 +52,12 @@ export function PdfCompressor({ defaultTarget = 200 }: { defaultTarget?: number 
     if (err) { setError(err); return; }
     setFile(f);
 
-    // Detect embedded images in the PDF client-side
     setDetecting(true);
     try {
       const imgs = await detectPdfImages(f);
       setDetectedImages(imgs);
     } catch {
-      // PDF image detection is optional enhancement
+      // Detection is optional
     } finally {
       setDetecting(false);
     }
@@ -72,24 +80,19 @@ export function PdfCompressor({ defaultTarget = 200 }: { defaultTarget?: number 
     } finally { setBusy(false); }
   };
 
-  return (
-    <section aria-label="PDF compressor" className="rounded-2xl bg-white p-4 shadow-sm border border-slate-200 sm:p-6">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-        <div>
-          <span className="inline-block rounded-full bg-blue-50 px-3 py-0.5 text-xs font-bold text-blue-700">PDF Document Compressor</span>
-          <h2 className="mt-1 font-display text-lg font-bold text-ink sm:text-xl">PDF to Exact KB</h2>
-        </div>
-        <span className="text-xs text-slate-500">For Challan, Degrees, Official Docs</span>
-      </div>
+  const containerClasses = isTabContent
+    ? "p-4 sm:p-6"
+    : "rounded-2xl bg-white p-4 shadow-sm border border-slate-200 sm:p-6";
 
+  return (
+    <section aria-label="PDF compressor" className={containerClasses}>
       {!cropTargetImage && (
         <Dropzone
           accept="application/pdf"
           onFile={onFile}
-          label="Drop your PDF here"
-          urduHelp="PDF document yahan drop karein, ya click karke PDF chunein."
-          fileLimits="PDF files up to 50 MB. Cleans metadata and detects embedded pictures."
-          icon="📄"
+          label={t("dropPdfTitle")}
+          urduHelp={t("dropPdfUrdu")}
+          fileLimits={t("dropPdfLimits")}
         />
       )}
 
@@ -110,8 +113,9 @@ export function PdfCompressor({ defaultTarget = 200 }: { defaultTarget?: number 
       {detectedImages.length > 0 && !cropTargetImage && (
         <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-3.5">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-bold text-pak">
-              📷 {detectedImages.length} picture{detectedImages.length > 1 ? "s" : ""} detected in this PDF
+            <span className="text-xs font-bold text-pak flex items-center gap-1.5">
+              <Camera className="w-3.5 h-3.5" />
+              {detectedImages.length} picture{detectedImages.length > 1 ? "s" : ""} detected in this PDF
             </span>
             <span className="text-[11px] text-slate-500">Extract or crop below</span>
           </div>
@@ -130,9 +134,10 @@ export function PdfCompressor({ defaultTarget = 200 }: { defaultTarget?: number 
                 <button
                   type="button"
                   onClick={() => setCropTargetImage(img)}
-                  className="mt-1.5 w-full rounded bg-pak py-1 text-center text-[11px] font-bold text-white hover:bg-pak-dark transition"
+                  className="mt-1.5 w-full inline-flex items-center justify-center gap-1 rounded bg-pak py-1 text-center text-[11px] font-bold text-white hover:bg-pak-dark transition"
                 >
-                  ✂️ Crop picture
+                  <Crop className="w-3 h-3" />
+                  Crop picture
                 </button>
               </div>
             ))}
@@ -164,8 +169,10 @@ export function PdfCompressor({ defaultTarget = 200 }: { defaultTarget?: number 
             <img src={croppedResult.url} alt="Cropped result" className="h-16 w-16 rounded border object-contain bg-white" />
             <Button
               size="md"
+              className="inline-flex items-center gap-2"
               onClick={() => downloadBlob(croppedResult.blob, "cropped-from-pdf.jpg")}
             >
+              <Download className="w-4 h-4" />
               Download cropped photo
             </Button>
           </div>
@@ -173,17 +180,22 @@ export function PdfCompressor({ defaultTarget = 200 }: { defaultTarget?: number 
       )}
 
       <div className="mt-4">
-        <label className="text-sm font-semibold text-ink">Target size</label>
+        <label className="text-sm font-semibold text-ink">{t("targetSize")}</label>
         <div className="mt-2"><SizePresetPicker value={target} onChange={setTarget} /></div>
       </div>
 
       <Button size="lg" className="mt-5 w-full sm:w-auto" onClick={run} disabled={!file || busy}>
-        {busy ? "Compressing PDF..." : `Compress PDF to ${target} KB`}
+        {busy ? "Compressing PDF..." : `${t("compressPdfBtn")} ${target} KB`}
       </Button>
 
       {error && <p role="alert" className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
       {note && <p className="mt-3 rounded-lg bg-pak-light p-3 text-sm text-slate-800">{note}</p>}
-      {blob && <Button className="mt-3" onClick={() => downloadBlob(blob, `compressed-${target}kb.pdf`)}>Download compressed PDF</Button>}
+      {blob && (
+        <Button className="mt-3 inline-flex items-center gap-2" onClick={() => downloadBlob(blob, `compressed-${target}kb.pdf`)}>
+          <Download className="w-4 h-4" />
+          {t("downloadPdf")}
+        </Button>
+      )}
 
       <p className="mt-4 text-xs text-slate-500">PDF text cannot always shrink to a small target. The tool tells you plainly when that happens.</p>
     </section>

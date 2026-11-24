@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy - Files stay in your browser | PakCompress",
+  description: "PakCompress works in your browser. Your photo and PDF never leave your device, and no account is needed for the free tool.",
+  alternates: { canonical: "/privacy" }
+};
+
 export default function Privacy() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">

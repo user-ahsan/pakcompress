@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of use | PakCompress",
+  description: "Terms for using PakCompress. The tool resizes and compresses files in your browser. Portal size limits shown are typical, not official rules.",
+  alternates: { canonical: "/terms" }
+};
+
 export default function Terms() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">

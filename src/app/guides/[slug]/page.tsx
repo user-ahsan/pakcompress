@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { GUIDES, getGuide } from "@/data/guides";
 
 export function generateStaticParams() {
@@ -20,8 +21,11 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!g) notFound();
   return (
     <article className="mx-auto max-w-3xl px-4 py-10">
-      <p className="text-sm text-slate-500"><Link href="/guides">Guides</Link> / {g.title}</p>
-      <h1 className="mt-2 text-3xl font-bold">{g.title}</h1>
+      <Link href="/guides" className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 transition hover:text-pak">
+        <ArrowLeft className="h-4 w-4" />
+        All guides
+      </Link>
+      <h1 className="mt-4 text-3xl font-bold">{g.title}</h1>
       <p className="mt-2 text-sm text-slate-500">Updated {g.updated}</p>
       {g.body.map((para, i) => (
         <p key={i} className="mt-4 leading-relaxed text-slate-800">{para}</p>

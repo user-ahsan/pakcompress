@@ -1,16 +1,26 @@
 import type { Metadata } from "next";
-import { Check, Lock } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Check, Lock } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Pricing - PakCompress Free and Pro | PakCompress",
+  title: "Pricing - Free and Pro | PakCompress",
   description: "PakCompress is free for 1 file at a time. Pro adds batch, ZIP, and passport print sheet. Payment is a stub in this build.",
-  alternates: { canonical: "/pricing" }
+  alternates: { canonical: "/pricing" },
+  openGraph: {
+    title: "Pricing - Free and Pro",
+    description: "Compress photos and PDFs for Pakistan forms free of cost. Pro adds batch processing, ZIP download, and a passport print sheet.",
+    type: "website"
+  }
 };
 
 export default function Pricing() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:py-16">
-      <div className="text-center">
+      <Link href="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 transition hover:text-pak">
+        <ArrowLeft className="h-4 w-4" />
+        Back to home
+      </Link>
+      <div className="mt-4 text-center">
         <h1 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">Simple, Transparent Pricing</h1>
         <p className="mt-3 text-base text-slate-600 sm:text-lg">
           Compress photos and PDFs for Pakistan forms free of cost. Upgrade to Pro for high volume batch processing.

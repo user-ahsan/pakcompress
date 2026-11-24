@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { Crop, Lock, Download } from "lucide-react";
+import { Crop, Lock, Download, AlertCircle } from "lucide-react";
 import { compressImageToTarget, downloadBlob, type ImageFormat } from "@/lib/compress-image";
 import { readHead, validateImageFile, formatKB } from "@/lib/validate";
 import { useLanguage } from "@/context/LanguageContext";
@@ -27,6 +27,8 @@ export function Compressor({
   const [result, setResult] = useState<{ blob: Blob; sizeKB: number; quality: number; width: number; height: number } | null>(null);
   const [proOpen, setProOpen] = useState(false);
   const [showCropper, setShowCropper] = useState(false);
+  const [isNonStandard, setIsNonStandard] = useState(false);
+  const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
     return () => { if (preview) URL.revokeObjectURL(preview); };
@@ -36,11 +38,35 @@ export function Compressor({
     setError(null);
     setResult(null);
     setShowCropper(false);
+    setIsNonStandard(false);
+    setDimensions(null);
+
     const head = await readHead(f);
     const err = validateImageFile(f, head);
     if (err) { setError(err); return; }
+
+    const url = URL.createObjectURL(f);
     setFile(f);
-    setPreview(URL.createObjectURL(f));
+    setPreview(url);
+
+    // Auto-detect image dimensions and aspect ratio
+    const img = new Image();
+    img.onload = () => {
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      setDimensions({ width: w, height: h });
+
+      const ratio = w / h;
+      const isSquare = Math.abs(ratio - 1) < 0.05;
+      const isPassport = Math.abs(ratio - (35 / 45)) < 0.05;
+
+      // If non-square and non-passport, auto-open cropper on the same screen
+      if (!isSquare && !isPassport) {
+        setIsNonStandard(true);
+        setShowCropper(true);
+      }
+    };
+    img.src = url;
   }, []);
 
   const handleCropComplete = (croppedBlob: Blob, croppedUrl: string) => {
@@ -51,7 +77,13 @@ export function Compressor({
     setFile(croppedFile);
     setPreview(croppedUrl);
     setShowCropper(false);
+    setIsNonStandard(false);
     setResult(null);
+
+    // Update dimensions from cropped image
+    const img = new Image();
+    img.onload = () => setDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+    img.src = croppedUrl;
   };
 
   const run = async () => {
@@ -75,7 +107,7 @@ export function Compressor({
 
   return (
     <section aria-label="Photo compressor" className={containerClasses}>
-      {!showCropper && (
+      {!file && (
         <Dropzone
           accept="image/jpeg,image/png,image/webp,image/gif"
           onFile={onFile}
@@ -85,26 +117,44 @@ export function Compressor({
         />
       )}
 
-      {file && !showCropper && (
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-slate-50 p-2.5 text-sm text-slate-700">
-          <span className="truncate font-medium">Selected: {file.name}</span>
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-pak">{formatKB(file.size)}</span>
-            <button
-              type="button"
-              onClick={() => setShowCropper(true)}
-              className="inline-flex items-center rounded-md bg-pak px-2.5 py-1 text-xs font-bold text-white hover:bg-pak-dark transition"
-            >
-              <Crop className="w-3.5 h-3.5 mr-1" />
-              {t("cropBtn")}
-            </button>
+      {/* Selected file summary and Change Photo button */}
+      {file && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-50 p-3 text-sm text-slate-700 border border-slate-200">
+          <div>
+            <p className="truncate font-semibold text-ink">{file.name}</p>
+            <p className="text-xs text-slate-500">
+              {formatKB(file.size)}
+              {dimensions && ` • ${dimensions.width} by ${dimensions.height} px`}
+            </p>
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              setFile(null);
+              setPreview(null);
+              setShowCropper(false);
+              setResult(null);
+            }}
+            className="text-xs font-bold text-slate-500 hover:text-red-700 underline cursor-pointer"
+          >
+            Change photo
+          </button>
         </div>
       )}
 
-      {/* Interactive Cropper Mode */}
+      {/* Auto-detected non-standard ratio banner */}
+      {isNonStandard && showCropper && (
+        <div className="mb-4 flex items-start gap-2.5 rounded-xl bg-amber-50 p-3 border border-amber-200 text-xs text-amber-900">
+          <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 mt-0.5" />
+          <p>
+            <span className="font-bold">Non-standard photo detected:</span> Pakistan forms (CNIC, FPSC, PPSC) require a square 1:1 or passport ratio. Position the frame below and click <strong>Apply Crop</strong>.
+          </p>
+        </div>
+      )}
+
+      {/* Inline Facebook-style Image Cropper on the same screen */}
       {showCropper && preview && (
-        <div className="mt-4">
+        <div className="mt-2 mb-4">
           <ImageCropper
             imageSrc={preview}
             initialRatio="1:1"
@@ -114,17 +164,22 @@ export function Compressor({
         </div>
       )}
 
+      {/* Normal Preview with Large Crop Action Button */}
       {preview && !showCropper && (
-        <div className="mt-4 flex flex-col items-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={preview} alt="Your photo preview" className="max-h-64 rounded-lg border object-contain shadow-sm" />
+        <div className="mt-2 mb-4 flex flex-col items-center">
+          <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-xs max-h-72">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={preview} alt="Your photo preview" className="max-h-72 w-auto object-contain" />
+          </div>
+
+          {/* Large prominent Crop button as requested */}
           <button
             type="button"
             onClick={() => setShowCropper(true)}
-            className="mt-2 inline-flex items-center text-xs font-semibold text-pak hover:underline"
+            className="mt-3.5 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-50 px-6 py-3 text-sm font-bold text-pak border-2 border-pak hover:bg-pak hover:text-white transition shadow-xs cursor-pointer w-full sm:w-auto"
           >
-            <Crop className="w-3 h-3 mr-1" />
-            Adjust crop (Square 1:1, Passport, or Freeform)
+            <Crop className="h-5 w-5 stroke-[2.2]" />
+            <span>Crop & Adjust Photo (Square 1:1 / Passport)</span>
           </button>
         </div>
       )}
@@ -145,10 +200,10 @@ export function Compressor({
       </div>
 
       <div className="mt-5 flex flex-wrap gap-3">
-        <Button size="lg" onClick={run} disabled={!file || busy} className="w-full sm:w-auto">
+        <Button size="lg" onClick={run} disabled={!file || busy} className="w-full sm:w-auto cursor-pointer">
           {busy ? "Compressing..." : `${t("compressPhotoBtn")} ${target} KB`}
         </Button>
-        <Button variant="outline" size="lg" onClick={() => setProOpen(true)} className="w-full sm:w-auto inline-flex items-center">
+        <Button variant="outline" size="lg" onClick={() => setProOpen(true)} className="w-full sm:w-auto inline-flex items-center cursor-pointer">
           <Lock className="w-4 h-4 mr-1.5" />
           {t("batchPro")}
         </Button>
@@ -160,7 +215,7 @@ export function Compressor({
         <div className="mt-5 rounded-xl bg-pak-light p-4">
           <p className="font-semibold text-pak">Done: {result.sizeKB.toFixed(1)} KB (was {file ? formatKB(file.size) : ""})</p>
           <p className="text-sm text-slate-700">Quality {Math.round(result.quality * 100)} percent, {result.width} by {result.height} px. GPS and EXIF data removed.</p>
-          <Button className="mt-3 inline-flex items-center gap-2" onClick={() => downloadBlob(result.blob, `compressed-${target}kb.jpg`)}>
+          <Button className="mt-3 inline-flex items-center gap-2 cursor-pointer" onClick={() => downloadBlob(result.blob, `compressed-${target}kb.jpg`)}>
             <Download className="w-4 h-4" />
             {t("downloadPhoto")}
           </Button>

@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { PORTAL_PRESETS, SIZES } from "@/data/presets";
 import { GUIDES } from "@/data/guides";
 
-const base = process.env.NEXT_PUBLIC_SITE_URL || "https://pakcompress.example.com";
+const base = process.env.NEXT_PUBLIC_SITE_URL || "https://pakcompress.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

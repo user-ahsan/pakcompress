@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Check, Lock } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Pricing - Free and Pro | PakCompress",
-  description: "PakCompress is free for 1 file at a time. Pro adds batch, ZIP, and passport print sheet. Payment is a stub in this build.",
+  title: "Pricing - Free Forever | PakCompress",
+  description: "PakCompress is free forever. Every tool is free: single and batch photo compress, ZIP download, passport photo and A4 print sheet, and PDF to exact KB. No payment, no account.",
   alternates: { canonical: "/pricing" },
   openGraph: {
-    title: "Pricing - Free and Pro",
-    description: "Compress photos and PDFs for Pakistan forms free of cost. Pro adds batch processing, ZIP download, and a passport print sheet.",
+    title: "Pricing - Free Forever",
+    description: "PakCompress is free forever. Batch compress, ZIP download, passport print sheet, and PDF to exact KB — all free, no account, no payment.",
     type: "website"
   }
 };
@@ -21,21 +21,20 @@ export default function Pricing() {
         Back to home
       </Link>
       <div className="mt-4 text-center">
-        <h1 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">Simple, Transparent Pricing</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">Free forever</h1>
         <p className="mt-3 text-base text-slate-600 sm:text-lg">
-          Compress photos and PDFs for Pakistan forms free of cost. Upgrade to Pro for high volume batch processing.
+          Every tool on PakCompress is free. No payment, no account, no paywall.
         </p>
       </div>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:gap-8">
-        {/* Free Plan */}
-        <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <div className="mx-auto mt-10 max-w-xl">
+        <div className="flex flex-col justify-between rounded-2xl border-2 border-pak bg-white p-6 shadow-md sm:p-8">
           <div>
-            <div className="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
+            <div className="inline-block rounded-full bg-pak px-3 py-1 text-xs font-bold text-white">
               Free Forever
             </div>
             <h2 className="mt-3 font-display text-2xl font-bold text-ink">Free</h2>
-            <p className="mt-1 text-sm text-slate-500">For students and job applicants needing occasional uploads.</p>
+            <p className="mt-1 text-sm text-slate-500">For students, job applicants, and anyone filling a Pakistan form.</p>
             <div className="mt-5 flex items-baseline gap-1">
               <span className="font-display text-4xl font-bold text-ink">Rs 0</span>
               <span className="text-sm font-medium text-slate-500">/ forever</span>
@@ -44,11 +43,23 @@ export default function Pricing() {
             <ul className="mt-6 space-y-3 text-sm text-slate-700">
               <li className="flex items-center gap-2.5">
                 <Check className="h-4 w-4 shrink-0 text-pak" />
-                <span>1 file at a time</span>
+                <span>Single photo compress to 20, 50, 100, 200, 500 KB exact targets</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Check className="h-4 w-4 shrink-0 text-pak" />
-                <span>20, 50, 100, 200, 500 KB exact targets</span>
+                <span>Batch compress up to 10 photos at once</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Check className="h-4 w-4 shrink-0 text-pak" />
+                <span>ZIP download for all compressed files</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Check className="h-4 w-4 shrink-0 text-pak" />
+                <span>Passport photo (single 35 by 45 mm) and A4 print sheet (8 photos)</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Check className="h-4 w-4 shrink-0 text-pak" />
+                <span>PDF to exact KB</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Check className="h-4 w-4 shrink-0 text-pak" />
@@ -56,7 +67,7 @@ export default function Pricing() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Check className="h-4 w-4 shrink-0 text-pak" />
-                <span>Passport photo (single 35 by 45 mm)</span>
+                <span>5 languages: English, Urdu, Roman Urdu, Sindhi, Punjabi</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Check className="h-4 w-4 shrink-0 text-pak" />
@@ -68,66 +79,17 @@ export default function Pricing() {
           <div className="mt-8">
             <a
               href="/#compress"
-              className="block w-full rounded-xl border border-slate-300 bg-slate-50 py-3 text-center text-sm font-bold text-ink hover:bg-slate-100 transition"
+              className="block w-full rounded-xl bg-pak py-3 text-center text-sm font-bold text-white hover:bg-pak-dark transition"
             >
-              Start using Free
+              Start compressing — free
             </a>
           </div>
         </div>
-
-        {/* Pro Plan */}
-        <div className="flex flex-col justify-between rounded-2xl border-2 border-pak bg-white p-6 shadow-md sm:p-8">
-          <div>
-            <div className="inline-flex items-center gap-1 rounded-full bg-pak px-3 py-1 text-xs font-bold text-white">
-              <Lock className="h-3 w-3" />
-              Pro Planned
-            </div>
-            <h2 className="mt-3 font-display text-2xl font-bold text-ink">Pro</h2>
-            <p className="mt-1 text-sm text-slate-500">For internet cafes, photostats, and power users.</p>
-            <div className="mt-5 flex items-baseline gap-1">
-              <span className="font-display text-4xl font-bold text-pak">Rs 499</span>
-              <span className="text-sm font-medium text-slate-500">/ month (planned)</span>
-            </div>
-
-            <ul className="mt-6 space-y-3 text-sm text-slate-700">
-              <li className="flex items-center gap-2.5">
-                <Check className="h-4 w-4 shrink-0 text-pak" />
-                <span className="font-semibold">Batch compress up to 10 files at once</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="h-4 w-4 shrink-0 text-pak" />
-                <span className="font-semibold">ZIP download for all compressed files</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="h-4 w-4 shrink-0 text-pak" />
-                <span>Passport print sheet (8 photos on A4 sheet)</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="h-4 w-4 shrink-0 text-pak" />
-                <span>PDF to exact KB advanced optimization</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="h-4 w-4 shrink-0 text-pak" />
-                <span>Zero ads and priority processing queue</span>
-              </li>
-            </ul>
-
-            <div className="mt-6 rounded-xl bg-amber-50 p-3 text-xs text-amber-900 border border-amber-200/60">
-              Checkout is a UI stub in this build. See docs/MONETIZATION.md for Paddle and Lemon Squeezy setup.
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <button
-              type="button"
-              disabled
-              className="block w-full rounded-xl bg-pak py-3 text-center text-sm font-bold text-white opacity-80 cursor-not-allowed"
-            >
-              Coming Soon
-            </button>
-          </div>
-        </div>
       </div>
+
+      <p className="mt-8 text-center text-sm text-slate-500">
+        There is no paid plan and nothing to upgrade to. Your files never leave your browser, and nothing is ever charged.
+      </p>
     </div>
   );
 }

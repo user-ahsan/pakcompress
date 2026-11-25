@@ -18,23 +18,23 @@ PakCompress compresses a photo or PDF to an exact KB target in your browser. No 
 - Compress image to 20, 50, 100, 200 or 500 KB with binary search on quality plus downscale steps
 - Compress PDF with metadata cleaning and an honest note when a text-only PDF cannot reach the target
 - Passport photo maker: 35 by 45 mm, 413 by 531 px at 300 DPI, white background
-- A4 print sheet with 8 passport photos (Pro UI)
+- A4 print sheet with 8 passport photos (free)
 - Portal presets: CNIC 20 KB, Passport 50 KB, Job Portal 100 KB, University 200 KB
 - 15 portal pages: FPSC, PPSC, SPSC, KPPSC, BPSC, NTS, NADRA, HEC, BISE Lahore, BISE Karachi, UHS, NUST, LUMS, PU, IBA
 - 12 practical guides with real numbers for Pakistan forms
 - Programmatic SEO: sitemap, robots, JSON-LD FAQ and SoftwareApplication, canonical URLs
 
-## Free vs Pro
+## Everything is free
 
-| | Free | Pro (planned) |
-|---|---|---|
-| Files at once | 1 | Up to 10 |
-| Targets | 20, 50, 100, 200, 500 KB | Same, plus batch |
-| ZIP download | No | Yes |
-| Passport print sheet | No | Yes |
-| PDF to exact KB | Basic clean | Full |
+| Feature | Free forever |
+|---|---|
+| Files at once | Single file or batch up to 10 |
+| Targets | 20, 50, 100, 200, 500 KB |
+| ZIP download | Yes |
+| Passport print sheet (8 photos on A4) | Yes |
+| PDF to exact KB | Yes |
 
-Pro checkout is a UI stub in this build. See `docs/MONETIZATION.md`. Do not charge users until Paddle or Lemon Squeezy is wired up with keys kept server side only.
+There is no paywall, no checkout, and no paid plan. Everything on this site is free.
 
 ## How it works - no upload
 

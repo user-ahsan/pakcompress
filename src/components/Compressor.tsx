@@ -1,14 +1,30 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { Crop, Lock, Download, AlertCircle } from "lucide-react";
+import { Crop, Download, AlertCircle } from "lucide-react";
 import { compressImageToTarget, downloadBlob, type ImageFormat } from "@/lib/compress-image";
 import { readHead, validateImageFile, formatKB } from "@/lib/validate";
+import { downloadZip } from "@/lib/zip";
 import { useLanguage } from "@/context/LanguageContext";
 import { Dropzone } from "./Dropzone";
 import { SizePresetPicker, PortalPresetRow } from "./SizePresetPicker";
-import { ProModal } from "./ProModal";
 import { ImageCropper } from "./ImageCropper";
 import { Button } from "./ui/button";
+
+interface BatchSuccess {
+  name: string;
+  originalKB: number;
+  sizeKB: number;
+  quality: number;
+  blob: Blob;
+  filename: string;
+}
+
+interface BatchFailure {
+  name: string;
+  error: string;
+}
+
+type BatchEntry = BatchSuccess | BatchFailure;
 
 export function Compressor({
   defaultTarget = 100,
@@ -25,7 +41,10 @@ export function Compressor({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ blob: Blob; sizeKB: number; quality: number; width: number; height: number } | null>(null);
-  const [proOpen, setProOpen] = useState(false);
+  const [batchFiles, setBatchFiles] = useState<File[]>([]);
+  const [batchResults, setBatchResults] = useState<BatchEntry[]>([]);
+  const [batchBusy, setBatchBusy] = useState(false);
+  const [batchError, setBatchError] = useState<string | null>(null);
   const [showCropper, setShowCropper] = useState(false);
   const [isNonStandard, setIsNonStandard] = useState(false);
   const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
@@ -99,6 +118,55 @@ export function Compressor({
     } finally {
       setBusy(false);
     }
+  };
+
+  const onBatchFiles = useCallback(async (list: FileList | File[]) => {
+    const all = Array.from(list);
+    const files = all.slice(0, 10);
+    const valid: File[] = [];
+    const errors: BatchEntry[] = [];
+    for (const f of files) {
+      const head = await readHead(f);
+      const err = validateImageFile(f, head);
+      if (err) errors.push({ name: f.name, error: err });
+      else valid.push(f);
+    }
+    setBatchFiles(valid);
+    // Show validation errors right away; successful files wait for "Compress all".
+    setBatchResults(errors);
+    setBatchError(all.length > 10 ? `Only the first 10 files were kept (${all.length} selected).` : null);
+  }, []);
+
+  const runBatch = async () => {
+    if (batchFiles.length === 0) { setBatchError("Choose up to 10 photos first."); return; }
+    setBatchBusy(true);
+    setBatchError(null);
+    const ext = format === "webp" ? "webp" : "jpg";
+    const out: BatchEntry[] = [];
+    for (const f of batchFiles) {
+      try {
+        const r = await compressImageToTarget(f, target, format);
+        const base = f.name.replace(/\.[^.]+$/, "") || "photo";
+        out.push({
+          name: f.name,
+          originalKB: f.size / 1024,
+          sizeKB: r.sizeKB,
+          quality: r.quality,
+          blob: r.blob,
+          filename: `compressed-${target}kb-${base}.${ext}`
+        });
+      } catch (e) {
+        out.push({ name: f.name, error: e instanceof Error ? e.message : "Compression failed." });
+      }
+    }
+    setBatchResults(out);
+    setBatchBusy(false);
+  };
+
+  const downloadBatchZip = async () => {
+    const done = batchResults.filter((r): r is BatchSuccess => !("error" in r));
+    if (done.length === 0) return;
+    await downloadZip(done.map((r) => ({ name: r.filename, blob: r.blob })), "pakcompress-batch.zip");
   };
 
   const containerClasses = isTabContent
@@ -203,10 +271,6 @@ export function Compressor({
         <Button size="lg" onClick={run} disabled={!file || busy} className="w-full sm:w-auto cursor-pointer">
           {busy ? "Compressing..." : `${t("compressPhotoBtn")} ${target} KB`}
         </Button>
-        <Button variant="outline" size="lg" onClick={() => setProOpen(true)} className="w-full sm:w-auto inline-flex items-center cursor-pointer">
-          <Lock className="w-4 h-4 mr-1.5" />
-          {t("batchPro")}
-        </Button>
       </div>
 
       {error && <p role="alert" className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
@@ -223,7 +287,64 @@ export function Compressor({
       )}
 
       <p className="mt-4 text-xs text-slate-500">{t("freeNote")}</p>
-      <ProModal open={proOpen} onClose={() => setProOpen(false)} />
+
+      {/* Free batch compress: up to 10 photos, same target and format as above */}
+      <div className="mt-8 border-t border-slate-200 pt-6">
+        <h3 className="font-display text-lg font-bold text-ink">Batch compress — free, up to 10 photos</h3>
+        <p className="mt-1 text-sm text-slate-600">Pick up to 10 photos. Each one is compressed to the same {target} KB target and format above, right in your browser. Nothing is uploaded.</p>
+        <label className="mt-4 block">
+          <span className="sr-only">Choose up to 10 photos</span>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            multiple
+            onChange={(e) => { if (e.target.files) void onBatchFiles(e.target.files); e.target.value = ""; }}
+            className="block w-full text-sm text-slate-700 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-pak file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-pak-dark"
+          />
+        </label>
+        {batchFiles.length > 0 && (
+          <ul className="mt-3 space-y-1 text-sm text-slate-700">
+            {batchFiles.map((f, i) => (
+              <li key={`${f.name}-${i}`} className="truncate">{f.name} — {formatKB(f.size)}</li>
+            ))}
+          </ul>
+        )}
+        <Button size="lg" onClick={() => void runBatch()} disabled={batchFiles.length === 0 || batchBusy} className="mt-4 w-full sm:w-auto cursor-pointer">
+          {batchBusy ? "Compressing batch..." : `Compress all to ${target} KB`}
+        </Button>
+        {batchError && <p role="alert" className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-800">{batchError}</p>}
+        {batchResults.length > 0 && (
+          <div className="mt-4">
+            <ul className="space-y-2">
+              {batchResults.map((r, i) => (
+                <li key={`${r.name}-${i}`} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
+                  {"error" in r ? (
+                    <div>
+                      <p className="truncate font-semibold text-ink">{r.name}</p>
+                      <p className="text-xs text-red-700">{r.error}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <p className="truncate font-semibold text-ink">{r.name}</p>
+                        <p className="text-xs text-slate-500">{r.originalKB.toFixed(1)} KB → {r.sizeKB.toFixed(1)} KB • Quality {Math.round(r.quality * 100)}%</p>
+                      </div>
+                      <Button variant="outline" onClick={() => downloadBlob(r.blob, r.filename)} className="inline-flex items-center gap-1.5 cursor-pointer">
+                        <Download className="w-4 h-4" /> Download
+                      </Button>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {batchResults.some((r) => !("error" in r)) && (
+              <Button onClick={() => void downloadBatchZip()} disabled={batchBusy} className="mt-3 inline-flex items-center gap-2 cursor-pointer">
+                <Download className="w-4 h-4" /> Download all as ZIP
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
     </section>
   );
 }

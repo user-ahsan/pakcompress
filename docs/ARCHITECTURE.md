@@ -45,7 +45,7 @@ A fast tool site that works for a user on a low-end Android phone in Pakistan, w
 - No `/api/upload` route. No fetch to an unknown server.
 - CSP in `next.config.js` blocks external scripts, frames, and objects. `frame-ancestors 'none'`, `object-src 'none'`.
 - Headers: X-Content-Type-Options nosniff, X-Frame-Options DENY, Referrer-Policy strict-origin-when-cross-origin, Permissions-Policy camera, microphone, geolocation off.
-- `.env.example` has placeholders only. No real key is in the repo. Paddle or Lemon Squeezy keys stay server side only.
+- `.env.example` has only the optional site URL. No secrets are in the repo, and there is no payment provider.
 - File validation is by magic bytes, not only by name.
 
 ## Routes

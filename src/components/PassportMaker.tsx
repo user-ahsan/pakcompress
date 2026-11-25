@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Crop, Lock, Download, AlertCircle } from "lucide-react";
+import { Crop, Download, AlertCircle } from "lucide-react";
 import { makePassportPhoto, makePassportSheet } from "@/lib/passport-photo";
 import { readHead, validateImageFile, formatKB } from "@/lib/validate";
 import { downloadBlob } from "@/lib/compress-image";
@@ -186,8 +186,7 @@ export function PassportMaker({ isTabContent = false }: { isTabContent?: boolean
           {busy ? "Processing photo..." : t("makePassportBtn")}
         </Button>
         <Button variant="outline" size="lg" onClick={sheet} disabled={!file || busy} className="w-full sm:w-auto inline-flex items-center cursor-pointer">
-          <Lock className="w-4 h-4 mr-1.5" />
-          Download A4 sheet (8 photos - Pro)
+          Download A4 sheet (8 photos) — Free
         </Button>
       </div>
 

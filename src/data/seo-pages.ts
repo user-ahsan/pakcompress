@@ -17,4 +17,4 @@ export const TOP_PAGES = [
   ...PORTAL_PRESETS.map((p) => ({ path: `/${p.slug}-photo-size`, title: `${p.name} photo size and KB limit` }))
 ];
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pakcompress.example.com";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pakcompress.vercel.app";

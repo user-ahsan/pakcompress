@@ -38,7 +38,7 @@ export default function Home() {
           <p className="mt-3 max-w-2xl text-lg text-slate-700">Free, fast, and private. Pick 20 KB, 50 KB, 100 KB or 200 KB. Your file never leaves your browser.</p>
           <div className="mt-4 flex flex-wrap gap-2 text-sm">
             <span className="rounded-full bg-white px-3 py-1 border">No upload</span>
-            <span className="rounded-full bg-white px-3 py-1 border">Free - 1 file</span>
+            <span className="rounded-full bg-white px-3 py-1 border">Free — batch up to 10 files</span>
             <span className="rounded-full bg-white px-3 py-1 border">Works on mobile</span>
             <span className="rounded-full bg-white px-3 py-1 border">English, Urdu, Sindhi, Punjabi</span>
           </div>
@@ -96,7 +96,7 @@ export default function Home() {
         <h2 className="text-2xl font-bold">Questions</h2>
         <div className="mt-4 space-y-3">
           <details className="rounded-xl border p-4"><summary className="font-semibold">Is my photo uploaded?</summary><p className="mt-2 text-sm text-slate-600">No. All work runs in your browser. Close the tab and the file is gone.</p></details>
-          <details className="rounded-xl border p-4"><summary className="font-semibold">What is free?</summary><p className="mt-2 text-sm text-slate-600">Free: 1 file at a time to 20, 50, 100, 200 or 500 KB. Pro adds batch, ZIP, and passport print sheet.</p></details>
+          <details className="rounded-xl border p-4"><summary className="font-semibold">What is free?</summary><p className="mt-2 text-sm text-slate-600">Everything is free: single or batch up to 10 photos, ZIP download, passport photo and A4 print sheet, and PDF to exact KB.</p></details>
           <details className="rounded-xl border p-4"><summary className="font-semibold">Why did my PDF not shrink to 100 KB?</summary><p className="mt-2 text-sm text-slate-600">Text-only PDFs are already small. The tool cannot remove text without removing pages. Split the PDF or use a larger target if the form allows it.</p></details>
           <details className="rounded-xl border p-4"><summary className="font-semibold">Is the size exact?</summary><p className="mt-2 text-sm text-slate-600">Yes. The tool measures the real file in bytes after each try and aims to land at or under your target.</p></details>
         </div>

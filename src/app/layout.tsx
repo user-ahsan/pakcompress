@@ -5,7 +5,7 @@ import { Footer } from "@/components/Footer";
 import { LanguageProvider } from "@/context/LanguageContext";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pakcompress.example.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pakcompress.vercel.app"),
   title: "PakCompress - Compress Photo and PDF to Exact KB for Pakistan Forms",
   description: "Compress a photo or PDF to 20 KB, 50 KB, 100 KB or 200 KB in your browser. No upload. Free for FPSC, PPSC, NTS, NADRA, HEC and university forms in Pakistan.",
   openGraph: { title: "PakCompress", description: "Photo and PDF compressor to exact KB. No upload. Built for Pakistan forms.", type: "website" },
